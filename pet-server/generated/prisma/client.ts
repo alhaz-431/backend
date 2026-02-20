@@ -47,3 +47,18 @@ export type User = Prisma.UserModel
  * 
  */
 export type Pet = Prisma.PetModel
+/**
+ * Model SitterProfiles
+ * 
+ */
+export type SitterProfiles = Prisma.SitterProfilesModel
+/**
+ * Model Service
+ * 
+ */
+export type Service = Prisma.ServiceModel
+/**
+ * Model Booking
+ * 
+ */
+export type Booking = Prisma.BookingModel

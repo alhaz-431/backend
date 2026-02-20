@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { prisma } from "../../lib/prisma";
 import { AuthService } from "./auth.service";
 import sendResponse from "../../utils/sendResponse";
 
-const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await AuthService.createUserIntoDB(req.body);
 
@@ -13,13 +13,8 @@ const createUser = async (req: Request, res: Response) => {
       message: "User created",
       data: result,
     });
-  } catch (error) {
-    sendResponse(res, {
-      statusCode: 201,
-      success: true,
-      message: "Something went wrong!!",
-      data: error,
-    });
+  } catch (error: any) {
+    next(error);
   }
 };
 
@@ -39,12 +34,12 @@ const loginUser = async (req: Request, res: Response) => {
       message: "User logged in successfully",
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     sendResponse(res, {
       statusCode: 500,
       success: false,
-      message: "Something went wrong!!",
-      data: error,
+      message: error?.message || "Something went wrong",
+      data: null,
     });
   }
 };

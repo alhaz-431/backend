@@ -24,3 +24,23 @@ export const Status = {
 } as const
 
 export type Status = (typeof Status)[keyof typeof Status]
+
+
+export const ServiceType = {
+  WALKING: 'WALKING',
+  BOARDING: 'BOARDING',
+  DAYCARE: 'DAYCARE',
+  SITTING: 'SITTING'
+} as const
+
+export type ServiceType = (typeof ServiceType)[keyof typeof ServiceType]
+
+
+export const BookingStatus = {
+  PENDING: 'PENDING',
+  CONFIRMED: 'CONFIRMED',
+  CANCELLED: 'CANCELLED',
+  COMPLETED: 'COMPLETED'
+} as const
+
+export type BookingStatus = (typeof BookingStatus)[keyof typeof BookingStatus]

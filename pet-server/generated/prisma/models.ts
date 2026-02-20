@@ -10,4 +10,7 @@
  */
 export type * from './models/User'
 export type * from './models/Pet'
+export type * from './models/SitterProfiles'
+export type * from './models/Service'
+export type * from './models/Booking'
 export type * from './commonInputTypes'
