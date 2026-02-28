@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const medicineSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }), // ✅ ঠিক আছে
+  name: z.string().min(1, { message: "Name is required" }), 
   price: z
-    .number() // number type check
-    .refine((val) => val !== undefined, { message: "Price is required" }), // undefined check
+    .number() 
+    .refine((val) => val !== undefined, { message: "Price is required" }), 
 });

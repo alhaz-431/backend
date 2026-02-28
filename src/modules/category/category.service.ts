@@ -11,7 +11,7 @@ const getAllCategoriesFromDB = async () => {
 };
 
 const updateCategoryIntoDB = async (id: string, payload: any) => {
-  return prisma.category.update({  // <-- small 'category'
+  return prisma.category.update({  
     where: { id },
     data: payload,
   });

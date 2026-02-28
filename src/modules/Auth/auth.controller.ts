@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { prisma } from "../../lib/prisma";
 import { AuthService } from "./auth.service";
 import sendResponse from "../../utils/sendResponse";
+
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await AuthService.createUserIntoDB(req.body);
 
     sendResponse(res, {
-      statusCode: 201,
+      statusCode: 201, 
       success: true,
-      message: "User created",
+      message: "User registered successfully",
       data: result,
     });
   } catch (error: any) {
@@ -18,36 +18,51 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+
 const loginUser = async (req: Request, res: Response) => {
   try {
     const result = await AuthService.loginUserIntoDB(req.body);
 
+    
     res.cookie("token", result.token, {
-      secure: false,
-      httpOnly: true,
-      sameSite: "strict", // none / strict / lax
+      secure: process.env.NODE_ENV === "production", 
+      httpOnly: true, 
+      sameSite: "lax", 
+      maxAge: 1000 * 60 * 60 * 24 * 7, 
     });
 
     sendResponse(res, {
-      statusCode: 201,
+      statusCode: 200, 
       success: true,
       message: "User logged in successfully",
-      data: result,
+      data: {
+        user: result.user,
+        token: result.token,
+      },
     });
   } catch (error: any) {
     sendResponse(res, {
-      statusCode: 500,
+      statusCode: 401, 
       success: false,
-      message: error?.message || "Something went wrong",
+      message: error?.message || "Invalid credentials",
       data: null,
     });
   }
 };
 
-export const AuthController = {
-  // Add controller methods here
-  createUser,
-  loginUser,
+
+const logoutUser = async (req: Request, res: Response) => {
+  res.clearCookie("token");
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: "User logged out successfully",
+    data: null,
+  });
 };
 
-
+export const AuthController = {
+  createUser,
+  loginUser,
+  logoutUser,
+};

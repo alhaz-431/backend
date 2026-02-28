@@ -5,11 +5,19 @@ import { medicineSchema } from "./medicine.validation";
 
 const createMedicine = async (req: Request, res: Response) => {
   try {
-    // 1️⃣ Validate request body with Zod
-    const validatedData = medicineSchema.parse(req.body);
+ 
+    const medicineData = {
+      ...req.body,
+      sellerId: req.user?.id, 
+    };
 
-    // 2️⃣ Create medicine in DB (এখানে সেলার আইডি লাগে, তাই req.user?.id থাকবে)
-    const result = await MedicineService.createMedicineIntoDB(validatedData, req.user?.id);
+   
+    const validatedData = medicineSchema.parse(medicineData);
+
+    const result = await MedicineService.createMedicineIntoDB(
+      validatedData, 
+      req.user?.id as string
+    );
 
     sendResponse(res, {
       statusCode: 201,
@@ -18,11 +26,15 @@ const createMedicine = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (error: any) {
-    console.error("Create Medicine Error:", error);
+    
+    const errorMessage = error?.issues 
+      ? error.issues.map((i: any) => i.message).join(", ") 
+      : error?.message;
+
     sendResponse(res, {
       statusCode: 500,
       success: false,
-      message: error?.message || "Something went wrong",
+      message: errorMessage || "Something went wrong",
       data: null,
     });
   }
@@ -30,17 +42,17 @@ const createMedicine = async (req: Request, res: Response) => {
 
 const getAllMedicines = async (req: Request, res: Response) => {
   try {
-    // সরাসরি সার্ভিস কল করুন
+   
     const result = await MedicineService.getAllMedicinesFromDB();
 
     sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Medicines retrieved successfully",
-      data: result, // এই ডাটাই আপনার সেই ৪টি মেডিসিন
+      data: result, 
     });
   } catch (error: any) {
-    // টার্মিনালে এরর দেখার জন্য এটি যোগ করুন
+   
     console.log("Error logic caught:", error); 
     
     sendResponse(res, {
