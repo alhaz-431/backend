@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String      @id @default(uuid())
+  name      String
+  email     String      @unique
+  password  String
+  role      Role        @default(CUSTOMER)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  status    Status      @default(ACTIVE)
+  medicines Medicines[]
+  orders    Orders[]
+  reviews   Reviews[]
+
+  @@map("users")
+}
+
+model Category {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  medicines   Medicines[]
+
+  @@map("categories")
+}
+
+model Medicines {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  stock       Int
+  image       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  sellerId    String
+  categoryId  String
+  category    Category     @relation(fields: [categoryId], references: [id])
+  seller      User         @relation(fields: [sellerId], references: [id])
+  orderItems  OrderItems[]
+  reviews     Reviews[]
+
+  @@map("medicines")
+}
+
+model Orders {
+  id              String       @id @default(uuid())
+  customerId      String
+  status          OrderStatus  @default(PLACED)
+  totalPrice      Float
+  shippingAddress String
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  items           OrderItems[]
+  customer        User         @relation(fields: [customerId], references: [id])
+
+  @@map("orders")
+}
+
+model OrderItems {
+  id         String    @id @default(uuid())
+  orderId    String
+  medicineId String
+  quantity   Int
+  price      Float
+  medicine   Medicines @relation(fields: [medicineId], references: [id])
+  order      Orders    @relation(fields: [orderId], references: [id])
+
+  @@map("order_items")
+}
+
+model Reviews {
+  id         String    @id @default(uuid())
+  customerId String
+  medicineId String
+  rating     Int
+  comment    String?
+  createdAt  DateTime  @default(now())
+  customer   User      @relation(fields: [customerId], references: [id])
+  Medicine   Medicines @relation(fields: [medicineId], references: [id])
+
+  @@map("reviews")
+}
+
+enum Role {
+  CUSTOMER
+  SELLER
+  ADMIN
+}
+
+enum OrderStatus {
+  PLACED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
